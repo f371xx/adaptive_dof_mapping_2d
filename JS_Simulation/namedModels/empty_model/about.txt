@@ -1,0 +1,3 @@
+Empty model to use standard control with same data loading
+
+Always returns an identity matrix such that adaptive control equals standard control

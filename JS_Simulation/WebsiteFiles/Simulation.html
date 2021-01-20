@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html dir="ltr" xml:lang="en">
+	<head> 
+		<!-- Meta Data   -->
+		<meta charset="utf-8"/>
+		<meta name="author" content="Felix Goldau" />
+		<link rel="stylesheet" href="style.css">
+		<meta http-equiv = "Content-Script-Type" content = "text/JavaScript" />
+		<title>2D Adaptive Simulation</title>
+	</head>
+	
+	<body>
+		<h1 id="title">2D Adaptive Simulation</h1>
+		<div id="misc">
+			This is the first version of the 2D Simulation of Adaptive DoF Control. 
+			<button onclick="toggleExplanationText()" id="explainButton" title="Show/Hide extensive explanation"></button><br>
+			<div id="explanation" style="display:none;margin-left: 20px;border-left: 1px solid; border-color:lightgray">
+				<div style="margin-left: 5px">
+					<p>
+						This simulation is designed to test the concept of a novel adaptive control based on changing Degrees of Freedom (DoF).
+						The presented scenario is of a red robot manipulator attempting to grasp blue boxes one at a time and transporting 
+						them to the proximitiy of the red target circle.
+						The manipulator can close its black fingers to apply force on a box and hold it during manipulation.<br>
+						Possible variation: The boxes can have poles, which are connected to one side of them. This creates a situation where the robot
+						can only grasp the boxes from a defined side (the one opposite of the pole) and make the scenario much more complicated to control.
+					</p>
+					<p>
+						The standard control allows the user to control the robots 4 DoF (forwards, sideways, rotation, grasping) individually.<br>
+						The adaptive control uses a neural network to assess the current state and offer specialised DoFs for control. 
+						This results in enabling the user to control the robot using changing DoFs. 
+						The DoFs are represented in the Head-Up-Disply (HUD): numerically in the left corner and as arrows drawn onto the gripper.<br>						
+						The numerical representation also includes the networks assumptions of probabilities for each DoF in the fifth row.
+						Up to two Adaptive DoFs can be selected, with the darker colored one being named <em>Adaptive DoF #1</em> for control.<br>
+						Press <em>Show Controls</em> to see an overview of the input keys.
+					</p>
+					<p>
+						This website can be used to generate training data. <br>
+						To do this, best disable the adaptive control option and initially get used to the standard controls.<br>
+						Once you are familiar with the standard control, press <em>Start Recording</em> and run the scenario to the best of your abilities.<br>
+						By pressing <em>Restart</em>, a new scenario will be loaded. It is possible to restart multiple times during a recording; the attempts will all be logged.
+						If finished with data aquisition, press <em>Stop Recording</em>. A prompt box will open asking you for a comment on your recording. 
+						Please provide a slim description of what you have done, including listing any problems you encountered.
+					</p>
+					<p>
+						The following dropdown lists allow choices of different experiences of adaptive control, including the underlying model of the neural network
+						and different control settings. Feel free to explore your favorites.
+					</p>				
+				</div>
+			</div>
+			<button onclick="window.open('/Controls.html', '_blank')" title="Open new window with control overview">Show Controls</button>
+			<button onclick="toggleAdaptiveButton()" id="adaptiveButton" title="En-/Disable the adaptive control method and data pulling"></button>
+			<button onclick="togglePoles()" id="poleButton" title="Adds poles to the boxes or removes them" value="false">Toggle box poles</button>
+			<button onclick="sim.restart()" id="restartButton" title="Set random positions in simulation">Restart</button>			
+			<button onclick="handle_recording()" value="false" id="recordingButton" title="Start/Stop serverside recording">Start Recording</button>
+			<br>
+			<div id="adaptiveDiv">
+				Model: <select id="modelSelect" title="Choose the model used by the neural network"></select>
+				<button onclick="aboutButton_pressed()" title="Get info about the selected model">about</button>
+				<button onclick="ioSocket.emit('UpdateServerModels')" title="Let the Server reload the models">Server:reload models</button>
+				<br>
+				Number of Adaptive DoFs: <select id="numDofSelect" title="Number of controlable Adaptive DoFs">
+					<option value=1	>1</option>
+					<option value=2 selected="true">2</option>
+				</select>
+				<select id="DofAutoSwitch" onchange="sim.gripper.chosenDof_timer=Date.now()" title="Toggle whether, after some idle time, the next adaptive DoF should be selected">
+					<option value=true selected="true">Auto-switch if idle</option>
+					<option value="false">Do not auto-switch</option>
+				</select>
+				<button onclick="toggleHUD()" id="toggleHudButton" value="true" title="Hides/Shows the head-up-display">Toggle HUD</button>
+				<br>
+				Method of handling changing DoFs: <select id="DofTrackingType" title="Select what to do with changing model output">
+					<option value="trackDofs">Stick to DoF, but allow changes</option>
+					<option value="ignoreTracking">Stick to selected index, but allow changes</option>
+					<option value="updateDofsOnlyIdle" selected="true">Lock DoFs while in use, update in idle</option>
+				</select>
+				<select id="DoF_SignMethod" title="Select whether the sign of the DoF should be dependant on the previous sign or defined such that the largest component is positive">
+					<option value="largestComponent" selected="true">Updated DoFs' largest component is positive</option>
+					<option value="keepOrientation">Updated DoFs' direction depends on previous</option>
+				</select>
+			</div>
+			<br>
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+		<script src='general.js'></script>		
+		<canvas id="sim_canvas" width="800" height="600"></canvas>
+		<script src='drawFunctions.js'></script>
+		<script src="/box2dweb/Box2d.min.js"></script>		
+		<script src='2DSim.js'></script>
+		<noscript>Your browser does not support JavaScript!</noscript>
+	</body>
+</html>
