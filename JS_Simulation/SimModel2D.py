@@ -6,7 +6,8 @@ import pathlib
 import cv2
 import numpy as np
 import tensorflow as tf
-tf.config.experimental.set_memory_growth((tf.config.list_physical_devices('GPU'))[0], True)
+if len(tf.config.list_physical_devices('GPU')) > 0:
+    tf.config.experimental.set_memory_growth(tf.config.list_physical_devices('GPU')[0], True)
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent/"Learning/"))
 import custom_layers
 
