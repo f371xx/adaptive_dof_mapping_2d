@@ -3,7 +3,7 @@
 
 Code Repository for Adaptive DoF Mapping
 
-For the publication, please see: [PETRA'21](http://www.petrae.org/)
+For the publication, please see: [ACM Digital Library](https://dl.acm.org/doi/10.1145/3453892.3453895)
 
 For the video contribution, please see: [Uni-Bremen Link](http://www.informatik.uni-bremen.de/agebv2/downloads/videos/GoldauPetra21.m4v)
 
